@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stock-intelligence"
+version = "1.0.0"
+description = "AI Stock Intelligence Platform for Indian Equities (NSE/BSE)"
+readme = "README.md"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["backend*"]
+

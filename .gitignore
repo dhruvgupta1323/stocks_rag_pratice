@@ -1,0 +1,38 @@
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pytest_cache
+.pytest_cache/
+
+# Node & Next.js
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Local databases
+test.db
+test_lazy.db
+*.db
+*.sqlite
+*.sqlite3
+
+# Packaging
+*.egg-info/
+egg-info/
+
+# Environment files
+.env
+.env.local
+
+# Operating system
+.DS_Store
+Thumbs.db
+
