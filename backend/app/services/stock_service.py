@@ -189,19 +189,35 @@ class StockService:
         self, instrument_id: str, interval: str = "1d", days: int = 90
     ) -> HistoricalBarsResponse:
         instrument = await self.get_instrument_by_id(instrument_id)
-        bars = await self.provider.get_historical_bars(
-            symbol=instrument.symbol,
-            exchange=instrument.exchange,
-            provider_instrument_id=instrument.provider_instrument_id,
-            interval=interval,
-            days=days,
-        )
+        try:
+            bars = await self.provider.get_historical_bars(
+                symbol=instrument.symbol,
+                exchange=instrument.exchange,
+                provider_instrument_id=instrument.provider_instrument_id,
+                interval=interval,
+                days=days,
+            )
+            data_status = "mock" if self.provider.provider_name == "mock" else "realtime"
+            provider_name = self.provider.provider_name
+        except Exception as e:
+            logger.warning(
+                f"Historical bars fetch failed for {instrument.symbol} using {self.provider.provider_name}: {e}. "
+                "Falling back to mock bars."
+            )
+            from backend.app.providers.mock import MockMarketDataProvider
+            mock_prov = MockMarketDataProvider()
+            bars = await mock_prov.get_historical_bars(
+                instrument.symbol, instrument.exchange, instrument.provider_instrument_id, interval, days
+            )
+            data_status = "mock"
+            provider_name = "mock_fallback"
+
         return HistoricalBarsResponse(
             instrument_id=instrument.id,
             symbol=instrument.symbol,
             exchange=instrument.exchange,
             interval=interval,
             bars=bars,
-            provider=self.provider.provider_name,
-            data_status="mock" if self.provider.provider_name == "mock" else "realtime",
+            provider=provider_name,
+            data_status=data_status,
         )

@@ -169,7 +169,12 @@ class EvaluationRunner:
         return EvaluationRunRead.model_validate(run)
 
     async def list_runs(self, limit: int = 10) -> List[EvaluationRunRead]:
-        stmt = select(EvaluationRun).order_by(desc(EvaluationRun.started_at)).limit(limit)
+        stmt = (
+            select(EvaluationRun)
+            .options(selectinload(EvaluationRun.results))
+            .order_by(desc(EvaluationRun.started_at))
+            .limit(limit)
+        )
         res = await self.db.execute(stmt)
         runs = res.scalars().all()
         return [EvaluationRunRead.model_validate(r) for r in runs]
