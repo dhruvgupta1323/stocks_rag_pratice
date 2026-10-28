@@ -16,16 +16,11 @@ class ResearchService:
         self.crawler = ResearchFeedCrawler(db)
 
     async def get_company_news(self, instrument_id: str, limit: int = 15) -> StockNewsResponse:
-        # Resolve instrument
-        stmt = (
-            select(Instrument)
-            .options(selectinload(Instrument.company))
-            .where((Instrument.id == instrument_id) | (Instrument.symbol == instrument_id.upper()))
-            .order_by(Instrument.exchange.desc())
-        )
-        res = await self.db.execute(stmt)
-        inst = res.scalars().first()
-        if not inst:
+        from backend.app.services.stock_service import StockService
+        stock_service = StockService(self.db)
+        try:
+            inst = await stock_service.get_instrument_by_id(instrument_id)
+        except Exception:
             raise StockIntelligenceException(f"Instrument '{instrument_id}' not found.")
 
         # Query existing research sources

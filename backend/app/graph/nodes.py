@@ -45,6 +45,13 @@ async def resolve_stock_node(state: ResearchState, db: AsyncSession) -> Dict[str
     # First check explicit instrument_id
     if instrument_id:
         matched_inst = next((i for i in instruments if i.id == instrument_id or i.symbol == instrument_id.upper()), None)
+        if not matched_inst:
+            try:
+                matched_inst = await StockService(db).get_instrument_by_id(instrument_id)
+                if matched_inst:
+                    instruments = list(instruments) + [matched_inst]
+            except Exception:
+                pass
 
     q_upper = question.upper()
     found_matches = []

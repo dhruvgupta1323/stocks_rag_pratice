@@ -15,15 +15,11 @@ class FinancialService:
         self.db = db
 
     async def get_company_financials(self, instrument_id: str) -> CompanyFinancialsResponse:
-        stmt = (
-            select(Instrument)
-            .options(selectinload(Instrument.company))
-            .where((Instrument.id == instrument_id) | (Instrument.symbol == instrument_id.upper()))
-            .order_by(Instrument.exchange.desc())
-        )
-        res = await self.db.execute(stmt)
-        inst = res.scalars().first()
-        if not inst:
+        from backend.app.services.stock_service import StockService
+        stock_service = StockService(self.db)
+        try:
+            inst = await stock_service.get_instrument_by_id(instrument_id)
+        except Exception:
             raise StockIntelligenceException(f"Instrument '{instrument_id}' not found.")
 
         m_stmt = select(FinancialMetric).where(FinancialMetric.company_id == inst.company_id)
