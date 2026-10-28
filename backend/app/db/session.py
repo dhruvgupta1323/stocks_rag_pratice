@@ -6,9 +6,17 @@ from backend.app.db.base import Base
 # Ensure all models are registered with Base metadata
 import backend.app.models  # noqa: F401
 
+import os
+
 # Normalize SQLite vs PostgreSQL URL for async driver if needed
 database_url = settings.DATABASE_URL
-if database_url.startswith("sqlite:///"):
+if "sqlite" in database_url and ("///./" in database_url or ":///" in database_url and not os.path.isabs(database_url.split("///")[-1])):
+    # Anchor SQLite database file to project workspace root so it works regardless of working directory
+    root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+    db_name = database_url.split("///")[-1].lstrip("./")
+    abs_path = os.path.join(root_dir, db_name).replace("\\", "/")
+    database_url = f"sqlite+aiosqlite:///{abs_path}"
+elif database_url.startswith("sqlite:///"):
     database_url = database_url.replace("sqlite:///", "sqlite+aiosqlite:///")
 elif database_url.startswith("postgresql://"):
     database_url = database_url.replace("postgresql://", "postgresql+asyncpg://")
