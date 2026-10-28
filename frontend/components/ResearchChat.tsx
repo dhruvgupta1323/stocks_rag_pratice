@@ -25,17 +25,23 @@ interface MessageItem {
 }
 
 interface ResearchChatProps {
-  symbol: string;
-  companyName: string;
-  instrumentId: string;
+  symbol?: string;
+  companyName?: string;
+  instrumentId?: string;
 }
 
 export default function ResearchChat({ symbol, companyName, instrumentId }: ResearchChatProps) {
+  const isGlobal = !symbol || symbol === "NSE";
+  const displaySym = symbol || "NSE";
+  const displayName = companyName || "Indian Equities Intelligence";
+
   const [messages, setMessages] = useState<MessageItem[]>([
     {
       id: "welcome",
       role: "assistant",
-      content: `Hello! I am your AI Research Assistant for ${companyName} (${symbol}). Ask me about latest quotes, technical indicators (RSI, SMA), FY24 financials, or recent news and announcements.`,
+      content: isGlobal
+        ? `Hello! I am your AI Market Intelligence Assistant. Ask me anything about ANY Indian stock on NSE/BSE (e.g. "What is the price of TONBO?", "Tell me about ZOMATO", "What is the RSI of TATAMOTORS?").`
+        : `Hello! I am your AI Research Assistant for ${displayName} (${displaySym}). Ask me about latest quotes, technical indicators (RSI, SMA), FY24 financials, or recent news and announcements.`,
       timestamp: new Date().toLocaleTimeString(),
     },
   ]);
@@ -70,7 +76,7 @@ export default function ResearchChat({ symbol, companyName, instrumentId }: Rese
     setError(null);
 
     try {
-      const response = await askQuestion(q, symbol, conversationId);
+      const response = await askQuestion(q, isGlobal ? undefined : symbol, conversationId);
       setConversationId(response.conversation_id);
 
       const assistantMsg: MessageItem = {
@@ -88,12 +94,19 @@ export default function ResearchChat({ symbol, companyName, instrumentId }: Rese
     }
   };
 
-  const sampleQuestions = [
-    `What is the current trading quote and day range for ${symbol}?`,
-    `What is the 14-day RSI and 20-day SMA for ${symbol}?`,
-    `What was ${symbol}'s reported revenue, profit, and PE ratio?`,
-    `What are the recent news and corporate announcements for ${symbol}?`,
-  ];
+  const sampleQuestions = isGlobal
+    ? [
+        "What is the current trading price of TONBO?",
+        "What is the 14-day RSI and 20-day SMA for RELIANCE?",
+        "Compare RELIANCE and TCS performance",
+        "What are the latest news and updates for TATAMOTORS?",
+      ]
+    : [
+        `What is the current trading quote and day range for ${symbol}?`,
+        `What is the 14-day RSI and 20-day SMA for ${symbol}?`,
+        `What was ${symbol}'s reported revenue, profit, and PE ratio?`,
+        `What are the recent news and corporate announcements for ${symbol}?`,
+      ];
 
   return (
     <div className="flex flex-col h-[650px] rounded-2xl border border-slate-800 bg-slate-900/80 backdrop-blur-md overflow-hidden shadow-2xl">

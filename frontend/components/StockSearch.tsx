@@ -77,6 +77,27 @@ export default function StockSearch({ onSelect, autoFocus = false }: StockSearch
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && query.trim()) {
+      e.preventDefault();
+      if (results.length > 0) {
+        handleSelect(results[0]);
+      } else {
+        const cleanSym = query.trim().toUpperCase();
+        handleSelect({
+          instrument_id: `${exchange || "NSE"}_EQ|${cleanSym}`,
+          company_id: "",
+          name: `${cleanSym} Limited`,
+          symbol: cleanSym,
+          exchange: exchange || "NSE",
+          sector: "Equities",
+          industry: "Equities",
+          currency: "INR",
+        });
+      }
+    }
+  };
+
   return (
     <div className="w-full max-w-2xl mx-auto">
       <div className="relative">
@@ -87,7 +108,8 @@ export default function StockSearch({ onSelect, autoFocus = false }: StockSearch
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by company name, symbol (e.g. Reliance, TCS, INFY, HDFC)..."
+            onKeyDown={handleKeyDown}
+            placeholder="Type any stock symbol or name (e.g. TONBO, ZOMATO, TATAPOWER, RELIANCE) & press Enter..."
             autoFocus={autoFocus}
             className="w-full bg-transparent text-slate-100 placeholder-slate-500 text-sm sm:text-base outline-none"
           />
@@ -108,12 +130,65 @@ export default function StockSearch({ onSelect, autoFocus = false }: StockSearch
                 {ex}
               </button>
             ))}
+            {query.trim().length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (results.length > 0) handleSelect(results[0]);
+                  else {
+                    const clean = query.trim().toUpperCase();
+                    handleSelect({
+                      instrument_id: `${exchange || "NSE"}_EQ|${clean}`,
+                      company_id: "",
+                      name: `${clean} Limited`,
+                      symbol: clean,
+                      exchange: exchange || "NSE",
+                      sector: "Equities",
+                      industry: "Equities",
+                      currency: "INR",
+                    });
+                  }
+                }}
+                className="ml-1 px-3 py-1 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-md transition-colors"
+              >
+                Go
+              </button>
+            )}
           </div>
         </div>
 
         {/* Results Dropdown */}
         {query.trim().length > 0 && (
           <div className="absolute left-0 right-0 mt-2 z-50 rounded-2xl border border-slate-800 bg-slate-900/95 shadow-2xl backdrop-blur-xl overflow-hidden max-h-96 overflow-y-auto">
+            <div className="p-2 border-b border-slate-800/80">
+              <button
+                onClick={() => {
+                  const cleanSym = query.trim().toUpperCase();
+                  handleSelect({
+                    instrument_id: `${exchange || "NSE"}_EQ|${cleanSym}`,
+                    company_id: "",
+                    name: `Open Instant Intelligence for ${cleanSym}`,
+                    symbol: cleanSym,
+                    exchange: exchange || "NSE",
+                    sector: "Equities",
+                    industry: "Equities",
+                    currency: "INR",
+                  });
+                }}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-cyan-950/40 hover:bg-cyan-900/60 border border-cyan-800/60 transition-colors text-left group"
+              >
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-cyan-400 shrink-0" />
+                  <span className="text-xs sm:text-sm font-semibold text-cyan-300">
+                    Open instant intelligence dashboard for &quot;{query.trim().toUpperCase()}&quot;
+                  </span>
+                </div>
+                <span className="text-[10px] text-cyan-300 font-bold px-2 py-0.5 rounded bg-cyan-900 border border-cyan-700 shrink-0">
+                  Press Enter ↵
+                </span>
+              </button>
+            </div>
+
             {results.length > 0 ? (
               <div className="p-2 divide-y divide-slate-800/60">
                 {results.map((stock) => (

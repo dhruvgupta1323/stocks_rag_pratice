@@ -139,12 +139,13 @@ class StockService:
             provider_id = matched.instrument_id or provider_id
             currency = matched.currency or currency
         else:
-            # Check if yfinance can retrieve quote to verify valid symbol
+            # Verify valid symbol with Yahoo Finance before onboarding
             try:
                 yf = YahooFinanceProvider()
                 quote = await yf.get_quote(sym, ex, provider_id)
                 if not quote or not quote.last_price:
                     return None
+                company_name = f"{sym} Limited"
             except Exception:
                 return None
 

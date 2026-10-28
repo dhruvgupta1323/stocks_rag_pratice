@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { TrendingUp, ShieldCheck, Database, Cpu, Search, ArrowRight, BarChart3, Newspaper } from "lucide-react";
 import StockSearch from "@/components/StockSearch";
+import ResearchChat from "@/components/ResearchChat";
 
 const FEATURED_STOCKS = [
   { symbol: "RELIANCE", name: "Reliance Industries", sector: "Energy", exchange: "NSE" },
@@ -78,6 +79,18 @@ export default function HomePage() {
               </Link>
             ))}
           </div>
+        </div>
+
+        {/* Live AI Research Intelligence Assistant */}
+        <div className="max-w-4xl mx-auto mb-16">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+              <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              Live AI Market Intelligence Assistant
+            </h2>
+            <span className="text-xs text-slate-400">Ask any question about any Indian stock</span>
+          </div>
+          <ResearchChat />
         </div>
 
         {/* Core Pillars */}
