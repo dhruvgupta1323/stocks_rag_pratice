@@ -15,12 +15,13 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = "sqlite+aiosqlite:///./stock_intelligence.db"
 
-    # Upstox / Market Data
+    # Market Data Providers (Upstox, Twelve Data, Mock)
+    DATA_PROVIDER: str = "twelvedata"  # "twelvedata", "upstox", or "mock"
     UPSTOX_API_KEY: Optional[str] = None
     UPSTOX_API_SECRET: Optional[str] = None
     UPSTOX_REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/upstox/callback"
     UPSTOX_ACCESS_TOKEN: Optional[str] = None
-    DATA_PROVIDER: str = "upstox"  # "upstox" or "mock"
+    TWELVE_DATA_API_KEY: Optional[str] = None
 
     # AI / LLM
     LLM_PROVIDER: str = "mock"  # "openai", "gemini", "groq", "mock"
