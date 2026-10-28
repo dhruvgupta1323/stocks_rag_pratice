@@ -194,3 +194,4 @@ class YahooFinanceProvider(BaseMarketDataProvider):
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "provider": "yfinance",
         }
+

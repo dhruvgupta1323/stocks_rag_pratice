@@ -204,3 +204,4 @@ class TwelveDataProvider(BaseMarketDataProvider):
                 "status": "OPEN",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
+
